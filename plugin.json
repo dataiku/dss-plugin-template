@@ -1,6 +1,6 @@
 {
     "id": "your-plugin-id",
-    "version": "X.y.z",
+    "version": "0.0.1",
     "meta": {
         "label": "Your label",
         "category": "Your category (optional)",
