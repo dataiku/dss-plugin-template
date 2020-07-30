@@ -2,7 +2,7 @@
     "id": "your-plugin-id",
     "version": "0.0.1",
     "meta": {
-        "label": "Your label",
+        "label": "Your plugin label",
         "category": "Your category (optional)",
         "description": "Your description (keep it short and simple)",
         "author": "Organization (firstName LASTNAME)",
@@ -12,6 +12,6 @@
         "tags": [
             "myTag"
         ],
-        "supportLevel": "NOT_SUPPORTED/TIER2_SUPPORT/SUPPORTED"
+        "supportLevel": "NOT_SUPPORTED"
     }
 }
