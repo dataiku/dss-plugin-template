@@ -25,10 +25,14 @@ unit-tests:
 	@( \
 		python3 -m venv env/; \
 		source env/bin/activate; \
-		pip install -r tests/python/requirements.txt; \
-		pip install -r code-env/python/spec/requirements.txt; \
-		python3 -m pytest tests/python/unit/; \
-		source deactivate; \
+		pip3 install --upgrade pip; \
+		pip install --no-cache-dir -r tests/python/requirements.txt; \
+		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
+		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
+		echo "PYTHONPATH=$(PYTHONPATH)";\
+		echo "suis je debile? $(PYTHONPATH):$(PWD)/python-lib"; \
+        	pytest --junitxml=unit.xml tests/python/unit || true; \
+		deactivate; \
 	)
 	@echo "[SUCCESS] Running unit tests: Done!"
 
