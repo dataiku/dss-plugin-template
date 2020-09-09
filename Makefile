@@ -29,7 +29,7 @@ unit-tests:
 		pip install --no-cache-dir -r tests/python/requirements.txt; \
 		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
 		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
-        	pytest --junitxml=unit.xml tests/python/unit || true; \
+        	pytest tests/python/unit || true; \
 		deactivate; \
 	)
 	@echo "[SUCCESS] Running unit tests: Done!"
