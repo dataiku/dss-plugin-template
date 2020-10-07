@@ -1,7 +1,4 @@
-# Public variable to be set by the user in the Makefile
-TARGET_DSS_VERSION=8.0
-
-# evaluate additional variable
+# Makefile variables set automatically
 plugin_id=`cat plugin.json | python -c "import sys, json; print(str(json.load(sys.stdin)['id']).replace('/',''))"`
 plugin_version=`cat plugin.json | python -c "import sys, json; print(str(json.load(sys.stdin)['version']).replace('/',''))"`
 archive_file_name="dss-plugin-${plugin_id}-${plugin_version}.zip"
