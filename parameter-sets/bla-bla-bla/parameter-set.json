@@ -1,0 +1,72 @@
+/* This file is the descriptor for the parameter set bla-bla-bla */
+{
+    "meta": {
+        // label: name of the parameter set as displayed, should be short
+        "label": "Parameter set bla-bla-bla",
+        // description: longer string to help end users understand what these parameter correspond to
+        "description": "",
+        // icon: must be one of the FontAwesome 3.2.1 icons, complete list here at https://fontawesome.com/v3.2.1/icons/
+        "icon": "icon-puzzle-piece"
+    },
+    /* if users are allowed to fill the values for an instance of this parameter
+       set directly in the plugin component using it, as opposed to only be allowed
+       to select already defined presets (default value, can be changed in plugin
+       settings)
+    */
+    "defaultDefinableInline": true,
+    /* if users are allowed to define presets at the project level in addition
+       to the instance level (default value, can be changed in plugin settings) */
+    "defaultDefinableAtProjectLevel": true,
+    /* The field "params" holds a list of all the params
+       for which the user will be prompted for values. The ones in
+       pluginParams relate to plugin settings (ie instance-level)
+       and the ones in params relate to element settings (ie recipe,
+       dataset, ...)
+
+       The values given by the user will override/complete the ones
+       set by the user in the element's (dataset, recipe,...) config.
+
+       To make parameters not visible in the element's config,
+       define them here but not in the element's json.
+
+       The available parameter types include:
+       STRING, STRINGS, INT, DOUBLE, BOOLEAN, SELECT, MULTISELECT, MAP, TEXTAREA,
+       PRESET, DATASET, DATASET_COLUMN, MANAGED_FOLDER, CREDENTIAL_REQUEST
+
+       For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
+    */
+    "pluginParams": [
+        {
+            "name": "parameter1",
+            "label": "User-readable name",
+            "type": "STRING",
+            "description": "Some documentation for parameter1",
+            "mandatory": true
+        }
+    ],
+    "params": [
+        {
+            "name": "parameter2",
+            "type": "INT",
+            "defaultValue": 42
+            /* Note that standard json parsing will return it as a double in Python (instead of an int), so you need to write
+               int(self.config()['parameter2'])
+            */
+        },
+        /* A "SELECT" parameter is a multi-choice selector. Choices are specified using the selectChoice field*/
+        {
+            "name": "parameter8",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "val_x",
+                    "label": "display name for val_x"
+                },
+                {
+                    "value": "val_y",
+                    "label": "display name for val_y"
+                }
+            ]
+        }
+    ]
+}
