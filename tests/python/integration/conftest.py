@@ -1,27 +1,17 @@
 import pytest
 import dataikuapi
 import subprocess
+import logging
 
 from dku_plugin_test_utils.run_config import ScenarioConfiguration
-from dku_plugin_test_utils import get_plugin_info
+from dku_plugin_test_utils.run_config import get_plugin_info
+from dku_plugin_test_utils.logger import Log
 
 
-def idfn(val):
-    """
-    Utilitary function that will alterate the display of test name.
-    Here we will add the target value (DSS7, DSS8, DSSX) to the test name
-    in order help recognize test runs against a specific DSS instance.
-    You will get the following:
-        test_run_read_zendesk_groups[DSS7]
-        test_run_read_zendesk_groups[DSS8]
+# Entry point for integration test cession, load the logger configuration
+Log()
 
-    Args:
-        val (any): One value from the parametrization iterable.
-
-    Returns:
-        str: The str to display next to the testcase name
-    """
-    return val["target"]
+logger = logging.getLogger("dss-plugin-test.zendesk.conftest")
 
 
 def pytest_generate_tests(metafunc):
@@ -34,11 +24,42 @@ def pytest_generate_tests(metafunc):
         metafunc: pytest object representing a test function
     """
     run_config = ScenarioConfiguration()
-    metafunc.parametrize("client", run_config.hosts, indirect=["client"], ids=idfn)
+    metafunc.parametrize("dss_target", run_config.targets, indirect=["dss_target"])
 
 
-@pytest.fixture(scope="module")
-def client(request):
+@pytest.fixture(scope="function")
+def dss_target(request):
+    """
+    This is a parameterized fixture. Its value will be set with the different DSS target (DSS7, DSS8 ...) that are specified in the configuration file.
+    It returns the value of the considered DSS target for the test. Here it is only used by other fixtures, but one could use it 
+    as a test function parameter to access its value inside the test function.
+
+    Args:
+        request: The object to introspect the “requesting” test function, class or module context
+
+    Returns:
+        The string corresponding to the considered DSS target for the test to be executed
+    """
+    return request.param
+
+
+@pytest.fixture(scope="function")
+def user_clients(dss_clients, dss_target):
+    """
+    Fixture that narrows down the dss clients to only the ones that are relevant considering the curent DSS target.
+
+    Args:
+        dss_clients (fixture): All the instanciated dss client for each user and dss targets
+        dss_target (fixture): The considered DSS target for the test to be executed
+
+    Returns:
+        A dict of dss client instances for the current DSS target and each of its specified users.
+    """
+    return dss_clients[dss_target]
+
+
+@pytest.fixture(scope="package")
+def dss_clients():
     """
     The client fixture that is used by each of the test that will target a DSS instance.
     The scope of that fixture is set to module, so upon exiting a test module the fixture is destroyed
@@ -50,12 +71,22 @@ def client(request):
     Returns:
         dssclient: return a instance of a DSS client. It will be the same reference for each test withing the associated context.
     """
-    host = request.param
-    return dataikuapi.DSSClient(host["url"], host["api_key"])
+    dss_clients = {}
+    run_config = ScenarioConfiguration()
+
+    logger.info("Instanciating all the DSS clients for each user and DSS instance")
+    for host in run_config.hosts:
+        target = host["target"]
+        dss_clients.update({target: {}})
+        url = host["url"]
+        for user, api_key in host["users"].items():
+            dss_clients[target].update({user: dataikuapi.DSSClient(url, api_key=api_key)})
+
+    return dss_clients
 
 
-@pytest.fixture(scope="module")
-def plugin(client):
+@pytest.fixture(scope="package")
+def plugin(dss_clients):
     """
     The plugin fixture that is used by each of the test. It depends on the client fixture, as it needs to be 
     uploaded on the proper DSS instance.
@@ -63,11 +94,14 @@ def plugin(client):
 
     Args:
         client: A DSS client instance.
-
-    Todo:
-        investigate a potential optimization, it seems to upload the plugin for each test.
     """
-    subprocess.run(['make', 'plugin'], stdout=subprocess.PIPE)
-    info = get_plugin_info()
-    with open('dist/dss-plugin-' + info["id"] + '-' + info["version"] + '.zip', 'rb') as file:
-        client.get_plugin(get_plugin_info()["id"]).update_from_zip(file)
+
+    logger.info("Uploading the pluging to each DSS instances [{}]".format(",".join(dss_clients.keys())))
+    # TODO : uncomment below, there is an error that i do not understand right now
+    # subprocess.run(['make', 'plugin'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # info = get_plugin_info()
+
+    # with open('dist/dss-plugin-' + info["id"] + '-' + info["version"] + '.zip', 'rb') as fd:
+    #     for target in dss_clients:
+    #         admin_client = dss_clients[target]["admin"]
+    #         admin_client.get_plugin(get_plugin_info()["id"]).update_from_zip(fd)
