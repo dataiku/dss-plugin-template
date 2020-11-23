@@ -2,6 +2,9 @@ import pytest
 import dataikuapi
 import subprocess
 import logging
+import os
+
+from operator import itemgetter
 
 from dku_plugin_test_utils.run_config import ScenarioConfiguration
 from dku_plugin_test_utils.run_config import get_plugin_info
@@ -89,7 +92,7 @@ def dss_clients():
 def plugin(dss_clients):
     """
     The plugin fixture that is used by each of the test. It depends on the client fixture, as it needs to be 
-    uploaded on the proper DSS instance.
+    uploaded on the proper DSS instance using the admin user.
     The scope of that fixture is set to module, so upon exiting a test module the fixture is destroyed
 
     Args:
@@ -97,11 +100,21 @@ def plugin(dss_clients):
     """
 
     logger.info("Uploading the pluging to each DSS instances [{}]".format(",".join(dss_clients.keys())))
-    # TODO : uncomment below, there is an error that i do not understand right now
-    # subprocess.run(['make', 'plugin'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # info = get_plugin_info()
+    subprocess.run(['make', 'plugin'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    info = get_plugin_info()
 
-    # with open('dist/dss-plugin-' + info["id"] + '-' + info["version"] + '.zip', 'rb') as fd:
-    #     for target in dss_clients:
-    #         admin_client = dss_clients[target]["admin"]
-    #         admin_client.get_plugin(get_plugin_info()["id"]).update_from_zip(fd)
+    plugin_zip_name = "dss-plugin-{plugin_id}-{plugin_version}.zip".format(plugin_id=info["id"], plugin_version=info["version"])
+    plugin_zip_path = os.path.join(os.getcwd(), "dist", plugin_zip_name)
+
+    for target in dss_clients:
+        admin_client = dss_clients[target]["admin"]
+        get_plugin_ids = itemgetter("id")
+        available_plugins = list(map(get_plugin_ids, admin_client.list_plugins()))
+        if info["id"] in available_plugins:
+            logger.debug("Plugin [{plugin_id}] is already installed on [{dss_target}], updating it".format(plugin_id=info["id"], dss_target=target))
+            with open(plugin_zip_path, 'rb') as fd:
+                admin_client.get_plugin(info["id"]).update_from_zip(fd)
+        else:
+            logger.debug("Plugin [{plugin_id}] is not installed on [{dss_target}], installing it".format(plugin_id=info["id"], dss_target=target))
+            with open(plugin_zip_path, 'rb') as fd:
+                admin_client.install_plugin_from_archive(fd)
