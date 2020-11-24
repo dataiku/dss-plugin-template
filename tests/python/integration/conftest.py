@@ -102,9 +102,11 @@ def plugin(dss_clients):
     logger.info("Uploading the pluging to each DSS instances [{}]".format(",".join(dss_clients.keys())))
     subprocess.run(['make', 'plugin'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     info = get_plugin_info()
-
+    logger.setLevel(logging.DEBUG)
     plugin_zip_name = "dss-plugin-{plugin_id}-{plugin_version}.zip".format(plugin_id=info["id"], plugin_version=info["version"])
     plugin_zip_path = os.path.join(os.getcwd(), "dist", plugin_zip_name)
+
+    uploaded_plugin = None
 
     for target in dss_clients:
         admin_client = dss_clients[target]["admin"]
@@ -113,8 +115,26 @@ def plugin(dss_clients):
         if info["id"] in available_plugins:
             logger.debug("Plugin [{plugin_id}] is already installed on [{dss_target}], updating it".format(plugin_id=info["id"], dss_target=target))
             with open(plugin_zip_path, 'rb') as fd:
-                admin_client.get_plugin(info["id"]).update_from_zip(fd)
+                uploaded_plugin = admin_client.get_plugin(info["id"])
+                uploaded_plugin.update_from_zip(fd)
         else:
             logger.debug("Plugin [{plugin_id}] is not installed on [{dss_target}], installing it".format(plugin_id=info["id"], dss_target=target))
             with open(plugin_zip_path, 'rb') as fd:
                 admin_client.install_plugin_from_archive(fd)
+                uploaded_plugin = admin_client.get_plugin(info["id"])
+
+        plugin_settings = uploaded_plugin.get_settings()
+        raw_plugin_settings = plugin_settings.get_raw()
+        if "codeEnvName" in raw_plugin_settings and len(raw_plugin_settings["codeEnvName"]) != 0:
+            logger.debug("Code env [{code_env_name}] is already associated to [{plugin_id}] on [{dss_target}], updating it".format(code_env_name=raw_plugin_settings["codeEnvName"], plugin_id=info["id"], dss_target=target))
+            # TODO : remove that error silencing when the public api is patched
+            try:
+                uploaded_plugin.update_code_env()
+            except KeyError:
+                pass
+
+        else:
+            logger.debug("No code env is associated to [{plugin_id}] on [{dss_target}], creating it".format(plugin_id=info["id"], dss_target=target))
+            ret = uploaded_plugin.create_code_env().wait_for_result()
+            plugin_settings.set_code_env(ret["envName"])
+            plugin_settings.save()
