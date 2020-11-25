@@ -31,14 +31,14 @@ unit-tests:
 		pip install --no-cache-dir -r tests/python/requirements.txt; \
 		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
 		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
-                pytest -o junit_family=xunit2 --junitxml=unit.xml tests/python/unit || true; \
+                pytest -o junit_family=xunit2 --junitxml=tests/unit.xml tests/python/unit || true; \
 		deactivate; \
 	)
 	@echo "[SUCCESS] Running unit tests: Done!"
 
 integration-tests:
 	@echo "[START] Running integration tests..."
-	# TODO add integration tests
+	pytest tests/python/integration --alluredir=tests/allure_report
 	@echo "[SUCCESS] Running integration tests: Done!"
 
 tests: unit-tests integration-tests
