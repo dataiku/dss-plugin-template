@@ -8,9 +8,11 @@ pipeline {
       stage('Run Unit Tests') {
          steps {
             sh 'echo "Running unit tests"'
+            catchError(stageResult: 'FAILURE') {
             sh """
                make unit-tests
                """
+            }
             sh 'echo "Done with unit tests"'
          }
       }
@@ -18,9 +20,11 @@ pipeline {
          steps {
             sh 'echo "Running integration tests"'
             sh 'echo "$HOST"'
+            catchError(stageResult: 'FAILURE') {
             sh """
                make integration-tests
                """
+            }
             sh 'echo "Done with integration tests"'
          }
       }
@@ -39,7 +43,7 @@ pipeline {
             def status = currentBuild.currentResult
             if (status == 'SUCCESS')
             {
-               colorCode = '#FF0000'
+               colorCode = '#00FF00'
             }
             if (status == 'UNSTABLE')
             {
