@@ -2,7 +2,7 @@ pipeline {
    options { disableConcurrentBuilds() }
    agent { label 'dss-plugin-tests'}
    environment {
-        HOST = "$dss_target_host"
+        PLUGIN_INTEGRATION_TEST_INSTANCE="$HOME/instance_config.json"
     }
    stages {
       stage('Run Unit Tests') {
@@ -19,7 +19,6 @@ pipeline {
       stage('Run Integration Tests') {
          steps {
             sh 'echo "Running integration tests"'
-            sh 'echo "$HOST"'
             catchError(stageResult: 'FAILURE') {
             sh """
                make integration-tests
@@ -41,7 +40,7 @@ pipeline {
             ])
 
             def status = currentBuild.currentResult
-            sh "file_name=\$(echo ${env.JOB_NAME} | tr '/' '-').status; touch \$file_name; echo \"${env.BUILD_URL};${env.CHANGE_TITLE};${env.CHANGE_AUTHOR};${env.CHANGE_URL};${status}\" >> /home/jenkins-agent/daily-statuses/\$file_name"
+            sh "file_name=\$(echo ${env.JOB_NAME} | tr '/' '-').status; touch \$file_name; echo \"${env.BUILD_URL};${env.CHANGE_TITLE};${env.CHANGE_AUTHOR};${env.CHANGE_URL};${status}\" >> $HOME/daily-statuses/\$file_name"
         }
      }
    }
