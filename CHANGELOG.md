@@ -1,0 +1,13 @@
+# Changelog
+
+## Version X.Y.Z - Type of release (*) - YYYY-MM-DD
+- Changes 1 ...
+- Changes 2 ... 
+- ...
+
+(*) Possible types of releases
+
+- Initial release
+- Bugfix release
+- Feature release
+- .... 
