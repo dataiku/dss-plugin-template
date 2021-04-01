@@ -22,8 +22,8 @@ plugin:
 
 
 .ONESHELL:
-.SHELLFLAGS = -e
 unit-tests:
+	@set -e
 	@echo "Running unit tests..."
 	@PYTHON_VERSION=`python3 -V 2>&1 | sed 's/[^0-9]*//g' | cut -c 1,2`
 	@PYTHON_VERSION_IS_CORRECT=`cat code-env/python/desc.json | python3 -c "import sys, json; print(str($$PYTHON_VERSION) in [x[-2:] for x in json.load(sys.stdin)['acceptedPythonInterpreters']]);"`
@@ -39,8 +39,8 @@ unit-tests:
 
 
 .ONESHELL:
-.SHELLFLAGS = -e
 integration-tests:
+	@set -e
 	@echo "Running integration tests..."
 	@rm -rf ./env/
 	@python3 -m venv env/
