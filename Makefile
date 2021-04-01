@@ -24,13 +24,13 @@ unit-tests:
 	@echo "Running unit tests..."
 	@( \
 		set -e; \
-		PYTHON_VERSION=`python3 -V 2>&1 | sed 's/[^0-9]*//g' | cut -c 1,2`; \
+		PYTHON_VERSION=`python4 -V 2>&1 | sed 's/[^0-9]*//g' | cut -c 1,2`; \
 		PYTHON_VERSION_IS_CORRECT=`cat code-env/python/desc.json | python3 -c "import sys, json; print(str($$PYTHON_VERSION) in [x[-2:] for x in json.load(sys.stdin)['acceptedPythonInterpreters']]);"`; \
 		if [ $$PYTHON_VERSION_IS_CORRECT == "False" ]; then echo "Python version $$PYTHON_VERSION is not in acceptedPythonInterpreters"; exit 1; else echo "Python version $$PYTHON_VERSION is in acceptedPythonInterpreters"; fi; \
 		rm -rf ./env/; \
 		python3 -m venv env/; \
 		source env/bin/activate; \
-		pip3 install --upgrade proutyprout;\
+		pip3 install --upgrade pip;\
 		pip install --no-cache-dir -r tests/python/unit/requirements.txt; \
 		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
 		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
