@@ -9,7 +9,7 @@ last_commit_id=`git rev-parse HEAD`
 
 
 plugin:
-	@echo "[START] Archiving plugin to dist/ folder..."
+	@echo "Archiving plugin to dist/ folder..."
 	@cat plugin.json | json_pp > /dev/null
 	@rm -rf dist
 	@mkdir dist
@@ -18,7 +18,7 @@ plugin:
 	@zip --delete dist/${archive_file_name} "tests/*"
 	@zip -u dist/${archive_file_name} release_info.json
 	@rm release_info.json
-	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
+	@echo "Archiving plugin to dist/ folder: Done!"
 
 
 .ONESHELL:
@@ -29,9 +29,9 @@ unit-tests:
 	@PYTHON_VERSION_IS_CORRECT=`cat code-env/python/desc.json | python3 -c "import sys, json; print(str($$PYTHON_VERSION) in [x[-2:] for x in json.load(sys.stdin)['acceptedPythonInterpreters']]);"`
 	@if [ $$PYTHON_VERSION_IS_CORRECT == "False" ]; then echo "Python version $$PYTHON_VERSION is not in acceptedPythonInterpreters"; exit 1; else echo "Python version $$PYTHON_VERSION is in acceptedPythonInterpreters"; fi
 	@rm -rf ./env/
-	@python3 -m venv env/
+	@python3 -m vnv env/
 	@source env/bin/activate
-	@pip3 install --upgrade pip
+	@pip3 install --upgrade proutyprout
 	@pip install --no-cache-dir -r tests/python/unit/requirements.txt
 	@pip install --no-cache-dir -r code-env/python/spec/requirements.txt
 	@export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"
