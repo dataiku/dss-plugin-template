@@ -29,7 +29,7 @@ unit-tests:
 	@PYTHON_VERSION_IS_CORRECT=`cat code-env/python/desc.json | python3 -c "import sys, json; print(str($$PYTHON_VERSION) in [x[-2:] for x in json.load(sys.stdin)['acceptedPythonInterpreters']]);"`
 	@if [ $$PYTHON_VERSION_IS_CORRECT == "False" ]; then echo "Python version $$PYTHON_VERSION is not in acceptedPythonInterpreters"; exit 1; else echo "Python version $$PYTHON_VERSION is in acceptedPythonInterpreters"; fi
 	@rm -rf ./env/
-	@python3 -m vnv env/
+	@python3 -m venv env/
 	@source env/bin/activate
 	@pip3 install --upgrade proutyprout
 	@pip install --no-cache-dir -r tests/python/unit/requirements.txt
