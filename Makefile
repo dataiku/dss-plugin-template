@@ -1,3 +1,5 @@
+SHELL:=/bin/bash
+
 # Makefile variables set automatically
 plugin_id=`cat plugin.json | python -c "import sys, json; print(str(json.load(sys.stdin)['id']).replace('/',''))"`
 plugin_version=`cat plugin.json | python -c "import sys, json; print(str(json.load(sys.stdin)['version']).replace('/',''))"`
@@ -20,7 +22,6 @@ plugin:
 
 
 .ONESHELL:
-SHELL = /bin/bash
 .SHELLFLAGS = -e
 unit-tests:
 	@echo "Running unit tests..."
@@ -38,7 +39,6 @@ unit-tests:
 
 
 .ONESHELL:
-SHELL = /bin/bash
 .SHELLFLAGS = -e
 integration-tests:
 	@echo "Running integration tests..."
