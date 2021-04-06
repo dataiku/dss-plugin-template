@@ -38,7 +38,6 @@ unit-tests:
 	@pytest tests/python/unit --alluredir=tests/allure_report
 	@echo "Running unit tests: Done!"
 
-
 .ONESHELL:
 integration-tests:
 	@set -e
