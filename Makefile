@@ -13,6 +13,7 @@ plugin:
 	@mkdir dist
 	@echo "{\"remote_url\":\"${remote_url}\",\"last_commit_id\":\"${last_commit_id}\"}" > release_info.json
 	@git archive -v -9 --format zip -o dist/${archive_file_name} HEAD
+	@zip --delete dist/${archive_file_name} "tests/*"
 	@zip -u dist/${archive_file_name} release_info.json
 	@rm release_info.json
 	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
@@ -28,12 +29,11 @@ unit-tests:
 		rm -rf ./env/; \
 		python3 -m venv env/; \
 		source env/bin/activate; \
-		pip3 install --upgrade pip;\
+		pip install --upgrade pip;\
 		pip install --no-cache-dir -r tests/python/unit/requirements.txt; \
 		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
 		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
 		pytest tests/python/unit --alluredir=tests/allure_report || ret=$$?; deactivate; exit $$ret \
-
 	)
 
 integration-tests:
