@@ -19,27 +19,33 @@ plugin:
 	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
 
 unit-tests:
-	@echo "[START] Running unit tests..."
+	@echo "Running unit tests..."
 	@( \
 		PYTHON_VERSION=`python3 -V 2>&1 | sed 's/[^0-9]*//g' | cut -c 1,2`; \
 		PYTHON_VERSION_IS_CORRECT=`cat code-env/python/desc.json | python3 -c "import sys, json; print(str($$PYTHON_VERSION) in [x[-2:] for x in json.load(sys.stdin)['acceptedPythonInterpreters']]);"`; \
 		if [ $$PYTHON_VERSION_IS_CORRECT == "False" ]; then echo "Python version $$PYTHON_VERSION is not in acceptedPythonInterpreters"; exit 1; else echo "Python version $$PYTHON_VERSION is in acceptedPythonInterpreters"; fi; \
 	)
 	@( \
+		rm -rf ./env/; \
 		python3 -m venv env/; \
 		source env/bin/activate; \
-		pip3 install --upgrade pip; \
-		pip install --no-cache-dir -r tests/python/requirements.txt; \
+		pip install --upgrade pip;\
+		pip install --no-cache-dir -r tests/python/unit/requirements.txt; \
 		pip install --no-cache-dir -r code-env/python/spec/requirements.txt; \
 		export PYTHONPATH="$(PYTHONPATH):$(PWD)/python-lib"; \
-		pytest -o junit_family=xunit2 --junitxml=unit.xml tests/python/unit || true; \
+		pytest tests/python/unit --alluredir=tests/allure_report || ret=$$?; exit $$ret \
 	)
-	@echo "[SUCCESS] Running unit tests: Done!"
 
 integration-tests:
-	@echo "[START] Running integration tests..."
-	# TODO add integration tests
-	@echo "[SUCCESS] Running integration tests: Done!"
+	@echo "Running integration tests..."
+	@( \
+		rm -rf ./env/; \
+		python3 -m venv env/; \
+		source env/bin/activate; \
+		pip3 install --upgrade pip;\
+		pip install --no-cache-dir -r tests/python/integration/requirements.txt; \
+		pytest tests/python/integration --alluredir=tests/allure_report || ret=$$?; exit $$ret \
+	)
 
 tests: unit-tests integration-tests
 
