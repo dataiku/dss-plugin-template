@@ -8,7 +8,9 @@ pipeline {
     }
    stages {
       stage('printenv') {
-         sh 'printenv'
+         steps {
+            sh 'printenv'
+         }
       }
       stage('Run Unit Tests') {
          when { environment name: 'UNIT_TEST_FILES_STATUS_CODE', value: "0"}
