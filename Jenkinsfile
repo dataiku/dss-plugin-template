@@ -7,11 +7,6 @@ pipeline {
         INTEGRATION_TEST_FILES_STATUS_CODE = sh(script: 'ls ./tests/*/integration/test*', returnStatus: true)
     }
    stages {
-      stage('printenv') {
-         steps {
-            sh 'printenv'
-         }
-      }
       stage('Run Unit Tests') {
          when { environment name: 'UNIT_TEST_FILES_STATUS_CODE', value: "0"}
          steps {
