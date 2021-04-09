@@ -2,7 +2,7 @@
     "id": "your-plugin-id",
     "version": "0.1.0",
     "meta": {
-        "label": "Your plugin label",
+        "label": "Plugin template - Replace by your plugin label",
         "category": "Your category (optional)",
         "description": "Your description (keep it short and simple)",
         "author": "Organization (firstName LASTNAME)",
