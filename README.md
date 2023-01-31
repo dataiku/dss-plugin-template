@@ -21,7 +21,7 @@ To install the `dataiku-plugin-tests-utils` package for your plugins, use the fo
 ### Development
 
 ```
-git+git://github.com/dataiku/dataiku-plugin-tests-utils.git@<BRANCH>#egg=dataiku-plugin-tests-utils
+git+https://github.com/dataiku/dataiku-plugin-tests-utils.git@<BRANCH>#egg=dataiku-plugin-tests-utils
 ```
 
 Replace `<BRANCH>` with the most accurate value
@@ -29,7 +29,7 @@ Replace `<BRANCH>` with the most accurate value
 ### Stable release
 
 ```
-git+git://github.com/dataiku/dataiku-plugin-tests-utils.git@releases/tag/<RELEASE_VERSION>#egg=dataiku-plugin-tests-utils
+git+https://github.com/dataiku/dataiku-plugin-tests-utils.git@releases/tag/<RELEASE_VERSION>#egg=dataiku-plugin-tests-utils
 ```
 
 Replace `<RELEASE_VERSION>` with the most accurate value
@@ -41,7 +41,7 @@ Put the following line under `[dev-packages]` section
 ### Development cycle
 
 ```
-dku-plugin-test-utils = {git = "git://github.com/dataiku/dataiku-plugin-tests-utils.git", ref = "<BRANCH>"}
+dku-plugin-test-utils = {git = "https://github.com/dataiku/dataiku-plugin-tests-utils.git", ref = "<BRANCH>"}
 ```
 
 ### Stable release
