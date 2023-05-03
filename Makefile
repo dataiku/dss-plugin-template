@@ -5,6 +5,7 @@ archive_file_name="dss-plugin-${plugin_id}-${plugin_version}.zip"
 remote_url=`git config --get remote.origin.url`
 last_commit_id=`git rev-parse HEAD`
 
+.DEFAULT_GOAL := plugin
 
 dist-clean:
 	rm -rf dist
@@ -26,7 +27,7 @@ dev: dist-clean
 	@echo "[START] Archiving plugin to dist/ folder... (dev mode)"
 	@cat plugin.json | json_pp > /dev/null
 	@mkdir dist
-	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*"
+	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*" "env/*"
 	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
 
 unit-tests:
