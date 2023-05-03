@@ -7,9 +7,6 @@ last_commit_id=`git rev-parse HEAD`
 
 .DEFAULT_GOAL := plugin
 
-dist-clean:
-	rm -rf dist
-
 plugin: dist-clean
 	@echo "[START] Archiving plugin to dist/ folder..."
 	@cat plugin.json | json_pp > /dev/null
@@ -27,7 +24,7 @@ dev: dist-clean
 	@echo "[START] Archiving plugin to dist/ folder... (dev mode)"
 	@cat plugin.json | json_pp > /dev/null
 	@mkdir dist
-	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*" "env/*"
+	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*" "env/*" ".git/*" ".pytest_cache/*"
 	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
 
 unit-tests:
@@ -60,3 +57,6 @@ integration-tests:
 	)
 
 tests: unit-tests integration-tests
+
+dist-clean:
+	rm -rf dist
