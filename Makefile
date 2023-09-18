@@ -24,7 +24,7 @@ dev: dist-clean
 	@echo "[START] Archiving plugin to dist/ folder... (dev mode)"
 	@cat plugin.json | json_pp > /dev/null
 	@mkdir dist
-	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*" "env/*" ".git/*" ".pytest_cache/*"
+	@zip -v -9 dist/${archive_file_name} -r . --exclude "tests/*" "env/*" ".git/*" ".pytest_cache/*" ".idea/*" "dist/*"
 	@echo "[SUCCESS] Archiving plugin to dist/ folder: Done!"
 
 unit-tests:
